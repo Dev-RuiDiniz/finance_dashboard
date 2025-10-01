@@ -1,17 +1,16 @@
 import streamlit as st
-from ui import render
-from db import init_db
+from repository import FinanceiroRepository
+from service import FinanceiroService
+from ui import DashboardUI
 
-# Configuração inicial - deve ser o primeiro comando!
-st.set_page_config(
-    layout="wide",
-    page_title="Dashboard Financeiro",
-    page_icon="💰"
-)
+# Configuração da página deve ser o primeiro comando
+st.set_page_config(layout="wide", page_title="Dashboard Financeiro Moderno")
 
 def main():
-    init_db()  # cria tabela se não existir
-    render()
+    repo = FinanceiroRepository()
+    service = FinanceiroService(repo)
+    ui = DashboardUI(service, repo)
+    ui.render()
 
 if __name__ == "__main__":
     main()
