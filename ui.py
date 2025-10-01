@@ -87,7 +87,7 @@ class DashboardUI:
         # --- aplicar estilo ---
         self.set_style()
 
-        st.title("💼 Dashboard Financeiro")
+        st.title("Dashboard Financeiro")
         MESES = self.service.MESES_ORDENADOS
 
         # --- Adicionar ---
@@ -165,7 +165,7 @@ class DashboardUI:
         col5.metric("Margem Média", f"{margem:.2f}%")
 
         # Gráfico mensal + acumulado (Cores e layout Plotly já atualizados)
-        st.subheader("📈 Evolução Mensal + Lucro Acumulado")
+        st.subheader("Evolução Mensal + Lucro Acumulado")
         
         AZUL_PRINCIPAL = "#007BFF" 
         FUNDO_CLARO_A = "#3498db"
@@ -193,7 +193,7 @@ class DashboardUI:
         st.plotly_chart(fig, use_container_width=True)
 
         # --- Previsão com OpenAI (Cores Plotly já atualizadas) ---
-        with st.expander("🔮 Previsão de Lucro com OpenAI"):
+        with st.expander("Previsão de Lucro com OpenAI"):
             previsoes = self.predictor.prever_lucro(df_ano, meses_futuros=3)
             if not previsoes.empty:
                 # O DataFrame agora tem o novo estilo
