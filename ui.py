@@ -10,10 +10,38 @@ class DashboardUI:
         self.repo = repository
         self.predictor = FinanceiroPredictor()
 
-    def render(self):
-        # ❌ Removido st.set_page_config() daqui
-        st.title("💼 Dashboard Financeiro Moderno")
+    def set_style(self):
+        st.markdown("""
+            <style>
+            /* Fundo principal */
+            body {
+                background-color: #f8f9fa;
+                color: #2c3e50;
+            }
+            /* Sidebar */
+            section[data-testid="stSidebar"] {
+                background-color: #f1f3f6;
+            }
+            /* Títulos */
+            h1, h2, h3 {
+                color: #1f4e79;
+                font-weight: 600;
+            }
+            /* KPIs como cards */
+            div[data-testid="stMetric"] {
+                background: #e9ecef;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
+    def render(self):
+        # --- aplicar estilo ---
+        self.set_style()
+
+        st.title("💼 Dashboard Financeiro")
         MESES = self.service.MESES_ORDENADOS
 
         # --- Adicionar ---
@@ -78,7 +106,7 @@ class DashboardUI:
         lucro = df_ano['lucro'].sum()
         margem = df_ano['margem'].mean()
         col1.metric("Faturamento Total", f"R$ {fatur:,.2f}")
-        col2.metric("Lucro Total", f"R$ {lucro:,.2f}")
+        col2.metric("Lucro Total", f"R$ {lucro:,.2f}", delta="↑" if lucro > 0 else "↓")
         col3.metric("Despesas Totais", f"R$ {desp:,.2f}")
         col4.metric("Custos Totais", f"R$ {custo:,.2f}")
         col5.metric("Margem Média", f"{margem:.2f}%")
@@ -86,11 +114,11 @@ class DashboardUI:
         # Gráfico mensal + acumulado
         st.subheader("📈 Evolução Mensal + Lucro Acumulado")
         fig = go.Figure()
-        fig.add_trace(go.Bar(name="Faturamento", x=df_ano["mes"], y=df_ano["faturamento"]))
-        fig.add_trace(go.Bar(name="Despesas", x=df_ano["mes"], y=df_ano["despesas"]))
-        fig.add_trace(go.Bar(name="Custos", x=df_ano["mes"], y=df_ano["custo"]))
-        fig.add_trace(go.Bar(name="Impostos", x=df_ano["mes"], y=df_ano["impostos"]))
-        fig.add_trace(go.Scatter(name="Lucro Acumulado", x=df_ano["mes"], y=df_ano["lucro_acumulado"], mode="lines+markers", line=dict(color="red", width=3)))
+        fig.add_trace(go.Bar(name="Faturamento", x=df_ano["mes"], y=df_ano["faturamento"], marker_color="#1f77b4"))
+        fig.add_trace(go.Bar(name="Despesas", x=df_ano["mes"], y=df_ano["despesas"], marker_color="#7f8c8d"))
+        fig.add_trace(go.Bar(name="Custos", x=df_ano["mes"], y=df_ano["custo"], marker_color="#2980b9"))
+        fig.add_trace(go.Bar(name="Impostos", x=df_ano["mes"], y=df_ano["impostos"], marker_color="#95a5a6"))
+        fig.add_trace(go.Scatter(name="Lucro Acumulado", x=df_ano["mes"], y=df_ano["lucro_acumulado"], mode="lines+markers", line=dict(color="#e74c3c", width=3)))
         fig.update_layout(barmode="group", yaxis_title="R$", title=f"Evolução Mensal e Acumulado - {ano_sel}")
         st.plotly_chart(fig, use_container_width=True)
 
@@ -99,7 +127,12 @@ class DashboardUI:
             previsoes = self.predictor.prever_lucro(df_ano, meses_futuros=3)
             if not previsoes.empty:
                 st.dataframe(previsoes, use_container_width=True)
-                fig_pred = px.line(previsoes, x="mes", y="lucro_previsto", title="Previsão de Lucro")
+                fig_pred = px.line(
+                    previsoes, x="mes", y="lucro_previsto", 
+                    title="Previsão de Lucro", 
+                    markers=True, line_shape="spline",
+                    color_discrete_sequence=["#1f4e79"]
+                )
                 st.plotly_chart(fig_pred, use_container_width=True)
             else:
                 st.info("Sem previsões disponíveis")
