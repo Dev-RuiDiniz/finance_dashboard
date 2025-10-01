@@ -13,26 +13,38 @@ class DashboardUI:
     def set_style(self):
         st.markdown("""
             <style>
-            /* Fundo principal */
+            /* Tema Moderno e Claro */
+
+            /* Fundo principal: Branco 'puro' para clareza máxima */
             body {
-                background-color: #f8f9fa;
-                color: #2c3e50;
+                background-color: #FFFFFF; /* Branco */
+                color: #333333; /* Texto principal mais escuro */
             }
-            /* Sidebar */
+            /* Sidebar: Um cinza muito, muito claro */
             section[data-testid="stSidebar"] {
-                background-color: #f1f3f6;
+                background-color: #F8F9FA; /* Cinza muito claro */
+                box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Sombra sutil */
             }
-            /* Títulos */
+            /* Títulos: Azul moderno, vibrante e claro */
             h1, h2, h3 {
-                color: #1f4e79;
-                font-weight: 600;
+                color: #007BFF; /* Azul principal moderno */
+                font-weight: 700;
             }
-            /* KPIs como cards */
+            /* KPIs como cards: Fundo branco com sombra suave */
             div[data-testid="stMetric"] {
-                background: #e9ecef;
+                background: #FFFFFF;
                 border-radius: 12px;
-                padding: 12px;
-                box-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+                padding: 16px; 
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+                border: 1px solid #EAEAEA; /* Borda sutil */
+            }
+            /* Texto secundário (para info/legendas) */
+            p, label, span {
+                color: #495057; 
+            }
+            /* Cor do delta de KPI (para contraste) */
+            div[data-testid="stMetricDelta"] span {
+                color: #28a745 !important; /* Verde moderno para positivo */
             }
             </style>
         """, unsafe_allow_html=True)
@@ -44,7 +56,7 @@ class DashboardUI:
         st.title("💼 Dashboard Financeiro")
         MESES = self.service.MESES_ORDENADOS
 
-        # --- Adicionar ---
+        # --- Adicionar (continua o mesmo) ---
         with st.expander("➕ Adicionar Dados Mensais", expanded=True):
             with st.form("form_financeiro"):
                 col1, col2, col3, col4 = st.columns(4)
@@ -61,7 +73,7 @@ class DashboardUI:
                         st.success(f"✅ Dados de {mes}/{ano} adicionados!")
                         st.rerun()
 
-        # --- Editar / Deletar ---
+        # --- Editar / Deletar (continua o mesmo) ---
         with st.expander("✏️ Editar / ❌ Excluir"):
             df_all = self.repo.listar()
             if not df_all.empty:
@@ -96,7 +108,7 @@ class DashboardUI:
         ano_sel = st.selectbox("Ano para análise detalhada", anos)
         df_ano = self.service.dados_por_ano(ano_sel)
 
-        # KPIs
+        # KPIs (Mantive o delta de Lucro com o novo estilo)
         st.subheader("📊 KPIs do Ano Selecionado")
         col1, col2, col3, col4, col5 = st.columns(5)
         fatur = df_ano['faturamento'].sum()
@@ -106,23 +118,45 @@ class DashboardUI:
         lucro = df_ano['lucro'].sum()
         margem = df_ano['margem'].mean()
         col1.metric("Faturamento Total", f"R$ {fatur:,.2f}")
-        col2.metric("Lucro Total", f"R$ {lucro:,.2f}", delta="↑" if lucro > 0 else "↓")
+        col2.metric("Lucro Total", f"R$ {lucro:,.2f}", delta="↑" if lucro > 0 else "↓", delta_color="normal") # Usando delta_color="normal" para Streamlit respeitar o CSS
         col3.metric("Despesas Totais", f"R$ {desp:,.2f}")
         col4.metric("Custos Totais", f"R$ {custo:,.2f}")
         col5.metric("Margem Média", f"{margem:.2f}%")
 
-        # Gráfico mensal + acumulado
+        # Gráfico mensal + acumulado (CORES ATUALIZADAS)
         st.subheader("📈 Evolução Mensal + Lucro Acumulado")
+        
+        # Paleta de cores moderna:
+        # Azul Principal: #007BFF
+        # Despesas/Custos/Impostos (Tons de Cinza/Azul Suave):
+        AZUL_PRINCIPAL = "#007BFF" 
+        FUNDO_CLARO_A = "#3498db" # Azul um pouco mais claro
+        FUNDO_CLARO_B = "#9BBFE0" # Azul acinzentado suave
+        FUNDO_CLARO_C = "#BDD4E7" # Azul muito suave
+        LINHA_LUCRO = "#28a745" # Verde para lucro (positivo)
+
         fig = go.Figure()
-        fig.add_trace(go.Bar(name="Faturamento", x=df_ano["mes"], y=df_ano["faturamento"], marker_color="#1f77b4"))
-        fig.add_trace(go.Bar(name="Despesas", x=df_ano["mes"], y=df_ano["despesas"], marker_color="#7f8c8d"))
-        fig.add_trace(go.Bar(name="Custos", x=df_ano["mes"], y=df_ano["custo"], marker_color="#2980b9"))
-        fig.add_trace(go.Bar(name="Impostos", x=df_ano["mes"], y=df_ano["impostos"], marker_color="#95a5a6"))
-        fig.add_trace(go.Scatter(name="Lucro Acumulado", x=df_ano["mes"], y=df_ano["lucro_acumulado"], mode="lines+markers", line=dict(color="#e74c3c", width=3)))
-        fig.update_layout(barmode="group", yaxis_title="R$", title=f"Evolução Mensal e Acumulado - {ano_sel}")
+        fig.add_trace(go.Bar(name="Faturamento", x=df_ano["mes"], y=df_ano["faturamento"], marker_color=AZUL_PRINCIPAL))
+        fig.add_trace(go.Bar(name="Despesas", x=df_ano["mes"], y=df_ano["despesas"], marker_color=FUNDO_CLARO_A))
+        fig.add_trace(go.Bar(name="Custos", x=df_ano["mes"], y=df_ano["custo"], marker_color=FUNDO_CLARO_B))
+        fig.add_trace(go.Bar(name="Impostos", x=df_ano["mes"], y=df_ano["impostos"], marker_color=FUNDO_CLARO_C))
+        
+        # Lucro Acumulado em destaque (verde moderno)
+        fig.add_trace(go.Scatter(name="Lucro Acumulado", x=df_ano["mes"], y=df_ano["lucro_acumulado"], mode="lines+markers", line=dict(color=LINHA_LUCRO, width=4)))
+        
+        # Atualização do layout para ser mais clean
+        fig.update_layout(
+            barmode="group", 
+            yaxis_title="R$", 
+            title=f"Evolução Mensal e Acumulado - {ano_sel}",
+            plot_bgcolor='white', # Fundo do gráfico branco
+            paper_bgcolor='white', # Fundo da área do gráfico branco
+            font=dict(color='#333333'),
+            hoverlabel=dict(bgcolor="white", font_size=14, font_family="Arial")
+        )
         st.plotly_chart(fig, use_container_width=True)
 
-        # --- Previsão com OpenAI ---
+        # --- Previsão com OpenAI (CORES ATUALIZADAS) ---
         with st.expander("🔮 Previsão de Lucro com OpenAI"):
             previsoes = self.predictor.prever_lucro(df_ano, meses_futuros=3)
             if not previsoes.empty:
@@ -131,8 +165,16 @@ class DashboardUI:
                     previsoes, x="mes", y="lucro_previsto", 
                     title="Previsão de Lucro", 
                     markers=True, line_shape="spline",
-                    color_discrete_sequence=["#1f4e79"]
+                    color_discrete_sequence=[AZUL_PRINCIPAL] # Usando o azul principal para a linha
                 )
+                
+                # Ajustando o layout da Previsão também
+                fig_pred.update_layout(
+                    plot_bgcolor='white', 
+                    paper_bgcolor='white', 
+                    font=dict(color='#333333')
+                )
+                
                 st.plotly_chart(fig_pred, use_container_width=True)
             else:
                 st.info("Sem previsões disponíveis")
