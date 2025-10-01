@@ -150,7 +150,7 @@ class DashboardUI:
         df_ano = self.service.dados_por_ano(ano_sel)
 
         # KPIs (cards com novo estilo)
-        st.subheader("📊 KPIs do Ano Selecionado")
+        st.subheader("KPIs do Ano Selecionado")
         col1, col2, col3, col4, col5 = st.columns(5)
         fatur = df_ano['faturamento'].sum()
         desp = df_ano['despesas'].sum()
