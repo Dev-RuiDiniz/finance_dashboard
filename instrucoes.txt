@@ -1,0 +1,31 @@
+Instalação e execução
+
+Crie e ative um ambiente virtual (recomendado):
+
+python -m venv .venv
+# Linux / macOS
+source .venv/bin/activate
+# Windows
+.venv\Scripts\activate
+
+
+Instale dependências:
+
+pip install streamlit pandas plotly openai
+
+
+Configure a variável de ambiente OPENAI_API_KEY (necessário para previsões):
+
+Linux/macOS:
+
+export OPENAI_API_KEY="sua_chave_aqui"
+
+
+Windows PowerShell:
+
+setx OPENAI_API_KEY "sua_chave_aqui"
+
+
+Rode o app:
+
+streamlit run main.py
