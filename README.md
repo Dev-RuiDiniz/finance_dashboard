@@ -36,40 +36,45 @@ Certifique-se de ter o **Python** (versão 3.8+) instalado em sua máquina.
 
 ### 2. Configuração do Ambiente
 
-```bash
+```
+bash
 # 1. Clone o repositório
 git clone <URL_DO_SEU_REPOSITORIO>
 cd dashboard-financeiro
-
+```
+```
 # 2. Crie e ative o ambiente virtual
 python -m venv venv
 source venv/bin/activate  # No Linux/macOS
 # ou
 .\venv\Scripts\activate    # No Windows
-
+```
+```
 # 3. Instale as dependências
 pip install streamlit pandas plotly
-
+```
 ⚠️ Atenção: Este projeto depende dos arquivos locais (models.py, predictor.py, etc.). Certifique-se de que todos os módulos necessários para a classe DashboardUI estão presentes.
-
-3. Execução do Dashboard
+---
+### 3. Execução do Dashboard
 Com o ambiente virtual ativado, inicie a aplicação:
-
+```
 Bash
 
-streamlit run seu_arquivo_principal.py 
+streamlit run seu_arquivo_principal.py
+```
 O dashboard será aberto no seu navegador em http://localhost:8501.
+---
 
-🎨 Detalhes do Design
+## 🎨 **Detalhes do Design**
 O design foi cuidadosamente atualizado para um visual mais premium:
 
-Elemento	Estilo
-Fundo	Branco puro (#FFFFFF)
-Títulos	Azul moderno (#007BFF), em negrito
-KPI Cards	Fundo branco com sombra suave (box-shadow)
-Inputs/Selects	Cantos arredondados (8px) e borda suave
-Gráficos	Fundo Plotly em branco para integrar-se ao tema
+- Elemento	Estilo
+- Fundo	Branco puro (#FFFFFF)
+- Títulos	Azul moderno (#007BFF), em negrito
+- KPI Cards	Fundo branco com sombra suave (box-shadow)
+- Inputs/Selects	Cantos arredondados (8px) e borda suave
+- Gráficos	Fundo Plotly em branco para integrar-se ao tema
+---
 
-Exportar para as Planilhas
-🤝 Contribuições
+## 🤝 **Contribuições**
 Sua contribuição é muito bem-vinda! Sinta-se à vontade para abrir Issues para bugs ou sugestões, ou enviar Pull Requests com melhorias no código ou no design.
