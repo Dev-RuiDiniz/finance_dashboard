@@ -18,15 +18,44 @@ O design do dashboard foi otimizado com um tema **claro, limpo e moderno** para 
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Python 3.x**
+* **Python 3.8+**
 * **Streamlit:** Para a construção rápida e interativa da interface de usuário (UI).
 * **Plotly/Plotly Express:** Para gráficos dinâmicos e de alta qualidade.
 * **Pandas:** Para manipulação e análise de dados eficiente.
-* **Módulos Internos:** `models`, `repository`, `service` e `predictor` para a arquitetura do projeto.
+* **OpenAI API:** Para previsões preditivas e geração de insights (opcional).
+* **SQLite:** Banco de dados local para armazenamento de dados financeiros.
+* **Estrutura em Pacote Python:** Módulos organizados dentro de `finance_dashboard/` para melhor manutenibilidade.
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 📁 Estrutura do Projeto
+
+Após a refatoração, o projeto está organizado em uma estrutura de pacote Python limpa e modular:
+
+```
+finance_dashboard/
+├── __init__.py              # Inicializa o pacote
+├── __main__.py              # Ponto de entrada para python -m finance_dashboard
+├── models.py                # Definição da classe Financeiro (dataclass)
+├── repository.py            # Camada de acesso aos dados (SQLite)
+├── service.py               # Lógica de negócio e cálculo de KPIs
+├── predictor.py             # Integração com OpenAI para previsões
+└── ui.py                    # Interface Streamlit (DashboardUI)
+
+main.py                      # Wrapper que chama finance_dashboard.__main__
+requirements.txt             # Dependências do projeto
+README.md                    # Este arquivo
+tools/
+└── import_check.py          # Script para validar sintaxe dos módulos
+```
+
+### Camadas Arquiteturais
+
+- **Models:** Classes de dados (`Financeiro`) com schema bem definido.
+- **Repository:** Acesso e manipulação de dados no banco SQLite.
+- **Service:** Lógica de negócio, cálculo de KPIs e transformação de dados.
+- **Predictor:** Integração com IA (OpenAI) para gerar previsões e insights.
+- **UI:** Interface interativa com Streamlit, renderização de gráficos e formulários.
 
 Siga os passos abaixo para preparar o ambiente e iniciar o dashboard (atualizado para a estrutura em pacote).
 
@@ -65,15 +94,15 @@ setx OPENAI_API_KEY "sua_chave_aqui"
 
 ### 4. Execução do Dashboard
 
-O projeto agora está organizado como um pacote Python `finance_dashboard` com um entrypoint para execução via módulo.
+O projeto agora está organizado como um pacote Python `finance_dashboard` executável.
 
-Recomendo iniciar com o Streamlit apontando para o `main.py` no nível do repositório:
+**Opção 1: Recomendada (via Streamlit)**
 
 ```powershell
 streamlit run main.py
 ```
 
-Alternativamente (nem sempre necessário) você pode executar o pacote diretamente (para testes rápidos de import):
+**Opção 2: Via módulo Python**
 
 ```powershell
 python -m finance_dashboard
@@ -82,24 +111,96 @@ python -m finance_dashboard
 O Streamlit abrirá o dashboard em `http://localhost:8501`.
 
 ---
-### Observações
 
-- Arquitetura: os módulos foram movidos para o pacote `finance_dashboard/` (ex.: `finance_dashboard/ui.py`, `finance_dashboard/service.py`).
-- Arquivos no nível superior (`ui.py`, `service.py`, etc.) agora reexportam (shims) para compatibilidade.
-- Se houver problemas ao rodar, verifique versões das dependências e se a `OPENAI_API_KEY` está definida.
+## 🔧 Desenvolvimento
+
+### Validar Sintaxe dos Módulos
+
+Para verificar se todos os módulos do pacote compilam corretamente:
+
+```powershell
+python tools/import_check.py
+```
+
+### Estrutura de Imports
+
+Após a refatoração, os imports dentro do pacote usam caminhos relativos:
+
+```python
+# Correto (dentro de finance_dashboard/)
+from .models import Financeiro
+from .repository import FinanceiroRepository
+
+# Externo (fora do pacote)
+from finance_dashboard.service import FinanceiroService
+```
+
+### Adicionando Novos Módulos
+
+Se precisar adicionar um novo módulo:
+1. Crie o arquivo dentro de `finance_dashboard/` (ex.: `analytics.py`).
+2. Atualize `finance_dashboard/__init__.py` se quiser exportar publicamente.
+3. Importe usando caminho relativo internamente (ex.: `from .analytics import ...`).
+
+---
+### Observações Importantes
+
+- **Pacote Único:** Os módulos estão **exclusivamente** dentro de `finance_dashboard/`. Não há mais shims no nível raiz.
+- **Imports:** Use sempre caminhos relativos para imports internos (ex.: `from .models import Financeiro`).
+- **Variáveis de Ambiente:** A chave `OPENAI_API_KEY` é necessária apenas se usar a funcionalidade de previsão com OpenAI.
+- **Banco de Dados:** O SQLite (`financeiro.db`) é criado automaticamente no diretório raiz na primeira execução.
 
 ---
 
-## 🎨 **Detalhes do Design**
-O design foi cuidadosamente atualizado para um visual mais premium:
-
-- Elemento	Estilo
-- Fundo	Branco puro (#FFFFFF)
-- Títulos	Azul moderno (#007BFF), em negrito
-- KPI Cards	Fundo branco com sombra suave (box-shadow)
-- Inputs/Selects	Cantos arredondados (8px) e borda suave
-- Gráficos	Fundo Plotly em branco para integrar-se ao tema
 ---
 
-## 🤝 **Contribuições**
-Sua contribuição é muito bem-vinda! Sinta-se à vontade para abrir Issues para bugs ou sugestões, ou enviar Pull Requests com melhorias no código ou no design.
+## 🎨 Detalhes do Design
+
+O design foi cuidadosamente atualizado para um visual moderno e premium:
+
+| Elemento | Estilo |
+|----------|--------|
+| Fundo | Branco puro (#FFFFFF) |
+| Títulos | Azul moderno (#007BFF), em negrito |
+| KPI Cards | Fundo branco com sombra suave (box-shadow) |
+| Inputs/Selects | Cantos arredondados (8px) e borda suave |
+| Gráficos | Fundo Plotly em branco para integrar-se ao tema |
+| Sidebar | Cinza muito claro (#F8F9FA) com sombra sutil |
+
+---
+
+## 📋 Funcionalidades do CRUD
+
+1. **Adicionar Dados:** Preencha ano, mês, faturamento, despesas, custos e impostos. Os dados são salvos automaticamente no SQLite.
+2. **Visualizar:** Todos os registros são listados em uma tabela interativa.
+3. **Editar:** Selecione um registro pelo ID e atualize os valores.
+4. **Deletar:** Remova registros que não são mais necessários.
+
+---
+
+## 📊 KPIs e Visualizações
+
+- **Faturamento Total:** Soma de todos os faturamentos do período.
+- **Lucro Total:** Faturamento menos (Despesas + Custos + Impostos).
+- **Margem Média:** Margem de lucro média em percentual.
+- **Evolução Mensal:** Gráfico de barras agrupadas mostrando faturamento vs. despesas vs. custos vs. impostos.
+- **Lucro Acumulado:** Linha contínua mostrando lucro acumulado ao longo dos meses.
+
+---
+
+## 🤖 Previsões com OpenAI
+
+Se configurar a chave `OPENAI_API_KEY`, você pode:
+- Gerar **previsões de lucro** para os próximos 3 meses usando IA.
+- Receber **insights automáticos** sobre a saúde financeira do negócio.
+
+> **Nota:** OpenAI é opcional. O dashboard funciona perfeitamente sem ela.
+
+---
+
+## 🤝 Contribuições
+
+Sua contribuição é muito bem-vinda! Sinta-se à vontade para:
+- Abrir **Issues** para reportar bugs ou sugerir melhorias.
+- Enviar **Pull Requests** com novos recursos ou correções.
+- Melhorar a documentação ou o design.
