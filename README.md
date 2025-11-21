@@ -28,7 +28,7 @@ O design do dashboard foi otimizado com um tema **claro, limpo e moderno** para 
 
 ## 🚀 Como Executar o Projeto
 
-Siga os passos abaixo para preparar o ambiente e iniciar o dashboard.
+Siga os passos abaixo para preparar o ambiente e iniciar o dashboard (atualizado para a estrutura em pacote).
 
 ### 1. Pré-requisitos
 
@@ -36,33 +36,58 @@ Certifique-se de ter o **Python** (versão 3.8+) instalado em sua máquina.
 
 ### 2. Configuração do Ambiente
 
-```
-bash
-# 1. Clone o repositório
+```powershell
+# 1. Clone o repositório (se necessário)
 git clone <URL_DO_SEU_REPOSITORIO>
-cd dashboard-financeiro
-```
-```
-# 2. Crie e ative o ambiente virtual
-python -m venv venv
-source venv/bin/activate  # No Linux/macOS
-# ou
-.\venv\Scripts\activate    # No Windows
-```
-```
-# 3. Instale as dependências
-pip install streamlit pandas plotly
-```
-⚠️ Atenção: Este projeto depende dos arquivos locais (models.py, predictor.py, etc.). Certifique-se de que todos os módulos necessários para a classe DashboardUI estão presentes.
----
-### 3. Execução do Dashboard
-Com o ambiente virtual ativado, inicie a aplicação:
-```
-Bash
+cd finance_dashboard
 
-streamlit run seu_arquivo_principal.py
+# 2. Crie e ative o ambiente virtual (PowerShell)
+python -m venv .venv
+. .venv\Scripts\Activate.ps1
+
+# 3. Instale as dependências listadas
+pip install -r requirements.txt
 ```
-O dashboard será aberto no seu navegador em http://localhost:8501.
+
+### 3. Variáveis de ambiente (OpenAI)
+
+Se usar integração com OpenAI, defina a variável `OPENAI_API_KEY`. No PowerShell temporariamente:
+
+```powershell
+$env:OPENAI_API_KEY = 'sua_chave_aqui'
+```
+
+Para definir de forma persistente no Windows (opcional):
+
+```powershell
+setx OPENAI_API_KEY "sua_chave_aqui"
+```
+
+### 4. Execução do Dashboard
+
+O projeto agora está organizado como um pacote Python `finance_dashboard` com um entrypoint para execução via módulo.
+
+Recomendo iniciar com o Streamlit apontando para o `main.py` no nível do repositório:
+
+```powershell
+streamlit run main.py
+```
+
+Alternativamente (nem sempre necessário) você pode executar o pacote diretamente (para testes rápidos de import):
+
+```powershell
+python -m finance_dashboard
+```
+
+O Streamlit abrirá o dashboard em `http://localhost:8501`.
+
+---
+### Observações
+
+- Arquitetura: os módulos foram movidos para o pacote `finance_dashboard/` (ex.: `finance_dashboard/ui.py`, `finance_dashboard/service.py`).
+- Arquivos no nível superior (`ui.py`, `service.py`, etc.) agora reexportam (shims) para compatibilidade.
+- Se houver problemas ao rodar, verifique versões das dependências e se a `OPENAI_API_KEY` está definida.
+
 ---
 
 ## 🎨 **Detalhes do Design**
